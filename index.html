@@ -1,41 +1,136 @@
-<!-- CodePen : colle UNIQUEMENT le contenu du <body> dans le panneau HTML,
-     style.css dans CSS et script.js dans JS. -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Traffic Color Sort</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Dégradés + effets partagés par tous les véhicules (rempli par script.js) -->
-  <svg width="0" height="0" style="position:absolute"><defs id="defs"></defs></svg>
 
-  <div id="app">
-    <header class="top">
-      <div class="pill" id="lvl">NIVEAU 1</div>
-      <div class="pill" id="moves">0 coup</div>
-      <div class="pill" id="time">00:00</div>
-    </header>
-
-    <main id="stage"><div id="board"></div></main>
-
-    <footer class="bot">
-      <button class="btn" id="btnUndo">↶<small>ANNULER</small></button>
-      <button class="btn" id="btnHint">💡<small>INDICE</small></button>
-      <button class="btn" id="btnRestart">🔁<small>RECOMMENCER</small></button>
-    </footer>
-
-    <div id="win" class="hidden">
-      <div class="card">
-        <h2>Niveau terminé ! 🎉</h2>
-        <p id="winInfo"></p>
-        <button class="btn next" id="btnNext">Niveau suivant ▶</button>
+  <!-- HEADER PERMANENT -->
+  <header id="main-header">
+    <div class="header-left">
+      <button class="profile-btn" onclick="UI.openModal('modal-profile')">
+        <span class="avatar-icon">🚗</span>
+      </button>
+    </div>
+    <div class="header-center">
+      <div class="res-badge">
+        <span>💵</span> <strong id="ui-bills">0</strong>
       </div>
+      <div class="res-badge">
+        <span>🔥</span> <strong id="ui-streak">0</strong>
+      </div>
+      <div class="res-badge">
+        <span id="ui-heart-icon">❤️</span> <strong id="ui-lives">5</strong>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="UI.openModal('modal-settings')">⚙️</button>
+    </div>
+  </header>
+
+  <!-- CONTENEUR DES ÉCRANS -->
+  <main id="app-body">
+    
+    <!-- ECRAN 1 : ACCUEIL / ROUTE DES SAISONS -->
+    <section id="screen-home" class="screen active">
+      <div class="screen-title">
+        <h2>Route des Saisons</h2>
+        <p id="ui-total-stars">⭐ 0 Étoiles</p>
+      </div>
+      <div id="seasons-map-container" class="scroll-container"></div>
+    </section>
+
+    <!-- ECRAN 2 : CLASSEMENT -->
+    <section id="screen-leaderboard" class="screen">
+      <div class="screen-title">
+        <h2>Classement Général</h2>
+      </div>
+      <div class="leaderboard-tabs">
+        <button class="tab-btn active" onclick="UI.switchLbTab('national')">🇫🇷 National</button>
+        <button class="tab-btn" onclick="UI.switchLbTab('global')">🌍 Mondial</button>
+      </div>
+      <div id="leaderboard-list" class="scroll-container">
+        <!-- Faux classement dynamique généré en JS -->
+      </div>
+    </section>
+
+    <!-- ECRAN 3 : BOUTIQUE -->
+    <section id="screen-shop" class="screen">
+      <div class="screen-title">
+        <h2>Boutique & Recharges</h2>
+      </div>
+      <div id="shop-items-container" class="scroll-container"></div>
+    </section>
+
+    <!-- ECRAN 4 : PLATEAU DE JEU -->
+    <section id="screen-game" class="screen">
+      <div class="game-bar">
+        <button class="icon-btn" onclick="UI.showScreen('screen-home')">⬅️</button>
+        <h3 id="game-level-title">Niveau 1</h3>
+        <button class="icon-btn" onclick="Game.restart()">🔄</button>
+      </div>
+      <div id="game-canvas"></div>
+      <div class="game-controls">
+        <button class="boost-btn" onclick="Game.useHint()">💡 Indice (<span id="ui-hints">3</span>)</button>
+        <button class="boost-btn" onclick="Game.useUndo()">↩️ Annuler (<span id="ui-undos">3</span>)</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BARRE DE NAVIGATION INFÉRIEURE -->
+  <nav id="bottom-nav">
+    <button class="nav-item" onclick="UI.showScreen('screen-leaderboard')">
+      <span class="nav-icon">🏆</span>
+      <span class="nav-label">Classement</span>
+    </button>
+    <button class="nav-item active" onclick="UI.showScreen('screen-home')">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Accueil</span>
+    </button>
+    <button class="nav-item" onclick="UI.showScreen('screen-shop')">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Boutique</span>
+    </button>
+  </nav>
+
+  <!-- MODALE PROFIL & STATS -->
+  <div id="modal-profile" class="modal hidden">
+    <div class="modal-card">
+      <h3>Profil Joueur</h3>
+      <div class="stats-grid">
+        <p>Parties jouées : <strong id="st-played">0</strong></p>
+        <p>Victoires : <strong id="st-won">0</strong></p>
+        <p>Taux de victoire : <strong id="st-winrate">0%</strong></p>
+        <p>Niveaux 3 ⭐ : <strong id="st-wins3">0</strong></p>
+      </div>
+      <button class="btn-main" onclick="UI.closeModals()">Fermer</button>
     </div>
   </div>
 
+  <!-- MODALE PARAMÈTRES -->
+  <div id="modal-settings" class="modal hidden">
+    <div class="modal-card">
+      <h3>Paramètres</h3>
+      <div class="settings-list">
+        <label>Sons 🔊 <input type="checkbox" id="set-sound" checked></label>
+        <label>Musique 🎵 <input type="checkbox" id="set-music" checked></label>
+        <label>Vibrations 📳 <input type="checkbox" id="set-haptics" checked></label>
+      </div>
+      <button class="btn-main" onclick="UI.closeModals()">Valider</button>
+    </div>
+  </div>
+
+  <!-- CHARGEMENT DU CODE (ORDRE STRICT) -->
+  <script src="economy.js"></script>
+  <script src="seasons.js"></script>
+  <script src="levels.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
   <script src="script.js"></script>
 </body>
 </html>
