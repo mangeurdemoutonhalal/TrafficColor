@@ -146,3 +146,12 @@ const Game = {
 };
 
 window.onload = () => UI.init();
+// À la fin du chargement dans script.js :
+setTimeout(() => {
+  const bar = document.getElementById('splash-progress');
+  if (bar) bar.style.width = '100%';
+  setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 500); }
+  }, 400);
+}, 500);
