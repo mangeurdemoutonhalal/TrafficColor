@@ -9,7 +9,7 @@
      3. Interface : toasts, fenêtres   7. Déroulé d'un niveau, victoire, défaite
      4. En-tête & navigation           8. Effets, boutons, démarrage
    ========================================================================= */
-const $ = id => document.getElementById(id);
+const  = id => document.getElementById(id);
 const app = $('app');
 
 /* Vérification des liaisons : si un fichier manque, on l'affiche clairement. */
